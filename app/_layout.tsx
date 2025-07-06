@@ -1,7 +1,10 @@
-import { SplashScreen, Stack } from "expo-router";
+import { SplashScreen, Stack, Slot, Redirect } from "expo-router";
 import "@/global.css";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
+
+import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
+import { tokenCache } from "@clerk/clerk-expo/token-cache";
 
 // Prevent the screen from the auto hiding before the assets loading is completed.
 SplashScreen.preventAutoHideAsync();
@@ -17,6 +20,8 @@ export default function RootLayout() {
     "Jakarta-SemiBold": require("../assets/fonts/PlusJakartaSans-SemiBold.ttf"),
   });
 
+  const { isSignedIn } = useAuth();
+
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
@@ -26,11 +31,19 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
+
+  if (isSignedIn) {
+    return <Redirect href={"/"} />;
+  }
+
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name={"index"} />
-      <Stack.Screen name={"(auth)"} />
-      <Stack.Screen name={"(root)"} />
-    </Stack>
+    <ClerkProvider tokenCache={tokenCache}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name={"index"} />
+        <Stack.Screen name={"(auth)"} />
+        <Stack.Screen name={"(root)"} />
+      </Stack>
+      <Slot />
+    </ClerkProvider>
   );
 }

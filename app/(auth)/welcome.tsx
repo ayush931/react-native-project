@@ -4,11 +4,14 @@ import { router } from "expo-router";
 import Swiper from "react-native-swiper";
 import { useRef, useState } from "react";
 import { onboarding } from "@/constants";
+import CustomButton from "@/components/CustomButton";
 
 export default function Welcome() {
   // creating swiper reference to control the swiper
   const swiperRef = useRef<Swiper>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const isLastSlide = activeIndex === onboarding.length - 1;
 
   return (
     <SafeAreaView
@@ -18,7 +21,7 @@ export default function Welcome() {
         onPress={() => {
           router.replace("//(auth)/sign-up");
         }}
-        className={"w-full flex justify-end items-end p-5"}
+        className={"flex w-full items-end justify-end p-5"}
       >
         <Text className={"font-JakartaBold text-black"}>Skip</Text>
       </TouchableOpacity>
@@ -26,10 +29,10 @@ export default function Welcome() {
         ref={swiperRef}
         loop={false}
         dot={
-          <View className={"w-[32px] h-[4px] mx-1 bg-[#e2e8f0] rounded-full"} />
+          <View className={"mx-1 h-[4px] w-[32px] rounded-full bg-[#e2e8f0]"} />
         }
         activeDot={
-          <View className={"w-[32px] h-[4px] mx-1 bg-[#0286ff] rounded-full"} />
+          <View className={"mx-1 h-[4px] w-[32px] rounded-full bg-[#0286ff]"} />
         }
         onIndexChanged={(index) => setActiveIndex(index)}
       >
@@ -40,23 +43,23 @@ export default function Welcome() {
           >
             <Image
               source={item.image}
-              className={"w-full h-[300px]"}
+              className={"h-[300px] w-full"}
               resizeMode={"contain"}
             />
             <View
               className={
-                "flex flex-row items-center justify-center w-full mt-10"
+                "mt-10 flex w-full flex-row items-center justify-center"
               }
             >
               <Text
-                className={"text-black text-3xl font-bold mx-10 text-center"}
+                className={"mx-10 text-center text-3xl font-bold text-black"}
               >
                 {item.title}
               </Text>
             </View>
             <Text
               className={
-                "text-lg font-JakartaSemiBold text-center text-[#858585] mx-10 mt-3"
+                "mx-10 mt-3 text-center font-JakartaSemiBold text-lg text-[#858585]"
               }
             >
               {item.description}
@@ -64,6 +67,15 @@ export default function Welcome() {
           </View>
         ))}
       </Swiper>
+      <CustomButton
+        title={isLastSlide ? "Get Started" : "Next"}
+        className={"mt-10-10 w-11/12"}
+        onPress={() =>
+          isLastSlide
+            ? router.replace("/(auth)/sign-up")
+            : swiperRef.current?.scrollBy(1)
+        }
+      />
     </SafeAreaView>
   );
 }
